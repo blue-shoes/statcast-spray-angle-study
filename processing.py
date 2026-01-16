@@ -2,6 +2,7 @@ import pandas as pd
 from pandas import DataFrame, Series
 import os
 import math
+import warnings
 
 import pybaseball
 from pybaseball import statcast
@@ -33,9 +34,12 @@ def get_statcast_data(year: int) -> DataFrame:
     if os.path.exists(sc_file):
         return pd.read_csv(sc_file)
 
-    raw_sc = statcast(start_dt=f"{year}-01-01", end_dt=f"{year}-12-31")
+    with warnings.catch_warnings():
+        warnings.simplefilter(action="ignore", category=FutureWarning)
+        raw_sc = statcast(start_dt=f"{year}-01-01", end_dt=f"{year}-12-31")
+
     sc_no_st = raw_sc.loc[raw_sc["game_type"] != "S"]
-    sc_batted_balls = sc_no_st.loc[sc_no_st["type"] == "X"]
+    sc_batted_balls = sc_no_st.loc[sc_no_st["type"] == "X"].copy()
     sc_batted_balls.dropna(axis=0, subset="hc_x", inplace=True)
     sc_batted_balls["bip"] = sc_batted_balls.apply(_is_bip, axis=1)
     sc_batted_balls["caught"] = sc_batted_balls.apply(_is_caught, axis=1)
@@ -48,7 +52,7 @@ def get_statcast_data(year: int) -> DataFrame:
         os.mkdir("data")
     sc_min.to_csv(f"data/sc_{year}.csv")
 
-    return sc_min
+    return sc_min.copy()
 
 
 def populate_spray_angle(series: Series, x: float, y: float) -> float:
