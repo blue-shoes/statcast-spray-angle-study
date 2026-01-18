@@ -59,7 +59,8 @@ def _plot_with_y_coords(
     x_origin, _ = origin
     foul_x = [0, x_origin, 2 * x_origin]
 
-    plt.subplot(1, 2, 1)
+    ax1 = plt.subplot(1, 2, 1)
+    ax1.set_facecolor("xkcd:off white")
     plt.plot(foul_x, foul_y, c="k")
 
     if origin2 and foul_y_2:
@@ -70,9 +71,10 @@ def _plot_with_y_coords(
         fair_df["hc_x"], -fair_df["hc_y"], marker="o", c="0.5", label="Fair", alpha=0.5
     )
     plt.legend()
-
-    plt.subplot(1, 2, 2)
-
+    plt.xticks([])
+    plt.yticks([])
+    ax2 = plt.subplot(1, 2, 2)
+    ax2.set_facecolor("xkcd:off white")
     plt.plot(foul_x, foul_y, c="k")
     if origin2 and foul_y_2:
         plt.plot(foul_x_2, foul_y_2, c="k")
@@ -82,7 +84,8 @@ def _plot_with_y_coords(
     )
 
     plt.legend()
-
+    plt.xticks([])
+    plt.yticks([])
     plt.suptitle(title, fontsize="xx-large")
     plt.subplots_adjust(top=0.95)
 
